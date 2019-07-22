@@ -11,24 +11,24 @@ import Foundation
 // Extension for string to provide helper method to generate names.
 extension String {
 
-  /// Fetches the first character of the string.
-  var first: String {
-    return String(characters.prefix(1))
-  }
+    /// Fetches the first character of the string.
+    var first: String {
+        return String(self.prefix(1))
+    }
 
-  /**
-   Makes the first character upper case.
-   */
-  mutating func uppercaseFirst() {
-    self = first.uppercased() + String(characters.dropFirst())
-  }
+    /**
+     Makes the first character upper case.
+     */
+    mutating func uppercaseFirst() {
+        self = first.uppercased() + String(self.dropFirst())
+    }
 
-  /**
-   Makes the first character lowercase.
-   */
-  mutating func lowerCaseFirst() {
-    self = first.lowercased() + String(characters.dropFirst())
-  }
+    /**
+     Makes the first character lowercase.
+     */
+    mutating func lowerCaseFirst() {
+        self = first.lowercased() + String(self.dropFirst())
+    }
 
   /**
    Replaces occurrence of multiple strings with a single string.

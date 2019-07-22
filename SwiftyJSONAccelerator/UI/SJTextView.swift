@@ -11,31 +11,35 @@ import Cocoa
 /// A textview customization to handle formatting and handling removal of quotes.
 class SJTextView: NSTextView {
 
-  override init(frame frameRect: NSRect, textContainer container: NSTextContainer?) {
-    super.init(frame: frameRect, textContainer: container)
-    self.isAutomaticQuoteSubstitutionEnabled = false
-    self.isAutomaticDashSubstitutionEnabled = false
-    self.isAutomaticTextReplacementEnabled = false
-  }
+    override init(frame frameRect: NSRect, textContainer container: NSTextContainer?) {
+        super.init(frame: frameRect, textContainer: container)
+        self.isAutomaticQuoteSubstitutionEnabled = false
+        self.isAutomaticDashSubstitutionEnabled = false
+        self.isAutomaticTextReplacementEnabled = false
+    }
 
-  required init?(coder: NSCoder) {
-    super.init(coder: coder)
-    self.isAutomaticQuoteSubstitutionEnabled = false
-    self.isAutomaticDashSubstitutionEnabled = false
-    self.isAutomaticTextReplacementEnabled = false
-  }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.isAutomaticQuoteSubstitutionEnabled = false
+        self.isAutomaticDashSubstitutionEnabled = false
+        self.isAutomaticTextReplacementEnabled = false
+    }
 
-  override var readablePasteboardTypes: [String] {
-        return [NSPasteboardTypeString]
-  }
+    override var readablePasteboardTypes: [NSPasteboard.PasteboardType] {
+        return [NSPasteboard.PasteboardType.string]
+    }
 
-  internal func updateFormat() {
-    textStorage?.font = NSFont(name: "Menlo", size: 12)
-    self.textColor = NSColor.white
-  }
+    //  override var readablePasteboardTypes: [String] {
+    //    return [NSPasteboardTypeString.rawValue]
+    //  }
 
-  override func paste(_ sender: Any?) {
-    super.paste(sender)
-    updateFormat()
-  }
+    internal func updateFormat() {
+        textStorage?.font = NSFont(name: "Menlo", size: 12)
+        self.textColor = NSColor.white
+    }
+
+    override func paste(_ sender: Any?) {
+        super.paste(sender)
+        updateFormat()
+    }
 }

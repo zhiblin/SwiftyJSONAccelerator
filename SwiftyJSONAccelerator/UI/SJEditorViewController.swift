@@ -91,15 +91,15 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
     }
 
     /**
-   Validates and updates the textview.
+     Validates and updates the textview.
 
-   - parameter pretty: If the JSON is to be pretty printed.
+     - parameter pretty: If the JSON is to be pretty printed.
 
-   - returns: if the format was valid.
-   */
+     - returns: if the format was valid.
+     */
     func validateAndFormat(_ pretty: Bool) -> Bool {
 
-        if textView?.string?.characters.count == 0 {
+        if textView?.string.count == 0 {
             return false
         }
 
@@ -108,13 +108,13 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
         if valid {
             if pretty {
                 textView?.string = JSONHelper.prettyJSON(textView?.string)!
-                textView!.lnv_textDidChange(Notification.init(name: NSNotification.Name.NSTextDidChange, object: nil))
+                textView!.lnv_textDidChange(Notification.init(name: NSText.didChangeNotification, object: nil))
                 return true
             }
             correctJSONMessage()
         } else if error != nil {
             handleError(error)
-            textView!.lnv_textDidChange(Notification.init(name: NSNotification.Name.NSTextDidChange, object: nil))
+            textView!.lnv_textDidChange(Notification.init(name: NSText.didChangeNotification, object: nil))
             return false
         } else {
             genericJSONError()
@@ -123,13 +123,13 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
     }
 
     /**
-   Actual function that generates the model.
-   */
+     Actual function that generates the model.
+     */
     func generateModel() {
 
         // The base class field is blank, cannot proceed without it.
         // Possibly can have a default value in the future.
-        if baseClassTextField?.stringValue.characters.count <= 0 {
+        if baseClassTextField?.stringValue.count <= 0 {
             let alert = NSAlert()
             alert.messageText = "Enter a base class name to continue."
             alert.runModal()
@@ -148,21 +148,21 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
         // Checks for validity of the content, else can cause crashes.
         if object != nil {
 
-            let nsCodingState = self.enableNSCodingSupportCheckbox.state == 1 && (modelTypeSelectorSegment.selectedSegment == 1)
-            let isFinalClass = self.setAsFinalCheckbox.state == 1 && (modelTypeSelectorSegment.selectedSegment == 1)
+            let nsCodingState = self.enableNSCodingSupportCheckbox.state.rawValue == 1 && (modelTypeSelectorSegment.selectedSegment == 1)
+            let isFinalClass = self.setAsFinalCheckbox.state.rawValue == 1 && (modelTypeSelectorSegment.selectedSegment == 1)
             let constructType = self.modelTypeSelectorSegment.selectedSegment == 0 ? ConstructType.StructType : ConstructType.ClassType
             let libraryType = libraryForIndex(self.librarySelector.indexOfSelectedItem)
             let configuration = ModelGenerationConfiguration.init(
-                                                                  filePath: filePath!.appending("/"),
-                                                                  baseClassName: baseClassTextField.stringValue,
-                                                                  authorName: authorNameTextField.stringValue,
-                                                                  companyName: companyNameTextField.stringValue,
-                                                                  prefix: prefixClassTextField.stringValue,
-                                                                  constructType: constructType,
-                                                                  modelMappingLibrary: libraryType,
-                                                                  supportNSCoding: nsCodingState,
-                                                                  isFinalRequired: isFinalClass,
-                                                                  isHeaderIncluded: includeHeaderImportCheckbox.state == 1 ? true : false)
+                filePath: filePath!.appending("/"),
+                baseClassName: baseClassTextField.stringValue,
+                authorName: authorNameTextField.stringValue,
+                companyName: companyNameTextField.stringValue,
+                prefix: prefixClassTextField.stringValue,
+                constructType: constructType,
+                modelMappingLibrary: libraryType,
+                supportNSCoding: nsCodingState,
+                isFinalRequired: isFinalClass,
+                isHeaderIncluded: includeHeaderImportCheckbox.state.rawValue == 1 ? true : false)
             let modelGenerator = ModelGenerator.init(JSON(object!), configuration)
             let filesGenerated = modelGenerator.generate()
             for file in filesGenerated {
@@ -214,17 +214,17 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
     // MARK: Internal Methods
 
     /**
-   Get the line number, column and the character for the position in the given string.
+     Get the line number, column and the character for the position in the given string.
 
-   - parameters:
-   - string: The JSON string that is in the textview.
-   - position: the location where the error is.
+     - parameters:
+     - string: The JSON string that is in the textview.
+     - position: the location where the error is.
 
-   - returns:
-   - character: the string that was causing the issue.
-   - line: the linenumber where the error was.
-   - column: the column where the error was.
-   */
+     - returns:
+     - character: the string that was causing the issue.
+     - line: the linenumber where the error was.
+     - column: the column where the error was.
+     */
     func characterRowAndLineAt(_ string: String, position: Int)
         -> (character: String, line: Int, column: Int) {
             var lineNumber = 0
@@ -232,7 +232,7 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
             for line in string.components(separatedBy: "\n") {
                 lineNumber += 1
                 var columnNumber = 0
-                for column in line.characters {
+                for column in line {
                     characterPosition += 1
                     columnNumber += 1
                     if characterPosition == position {
@@ -248,11 +248,11 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
     }
 
     /**
-   Handle Error message that is provided by the JSON helper and extract the message and showing them accordingly.
+     Handle Error message that is provided by the JSON helper and extract the message and showing them accordingly.
 
-   - parameters:
-   - error: NSError that was provided.
-   */
+     - parameters:
+     - error: NSError that was provided.
+     */
     func handleError(_ error: NSError?) {
         if let message = error!.userInfo["debugDescription"] as? String {
             let numbers = message.components(separatedBy: CharacterSet.decimalDigits.inverted)
@@ -285,27 +285,27 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
     /// MARK: Resetting and showing error messages
 
     /**
-   Reset the whole error view with no image and message.
-   */
+     Reset the whole error view with no image and message.
+     */
     func resetErrorImage() {
         errorImageView?.image = nil
         messageLabel?.stringValue = ""
     }
 
     /**
-   Show that the JSON is fine with proper icon.
-   */
+     Show that the JSON is fine with proper icon.
+     */
     func correctJSONMessage() {
         errorImageView?.image = NSImage.init(named: "success")
         messageLabel?.stringValue = "Valid JSON!"
     }
 
     /**
-   Show the invalid JSON error with proper error and message.
+     Show the invalid JSON error with proper error and message.
 
-   - parameters:
-   - message: Error message that is to be shown.
-   */
+     - parameters:
+     - message: Error message that is to be shown.
+     */
     func invalidJSONError(_ message: String) {
         errorImageView?.image = NSImage.init(named: "failure")
         messageLabel?.stringValue = message
@@ -328,16 +328,16 @@ class SJEditorViewController: NSViewController, NSTextViewDelegate {
     // MARK: Internal Methods
 
     /**
-   Open the file selector to select a location to save the generated files.
+     Open the file selector to select a location to save the generated files.
 
-   - returns: Return a valid path or nil.
-   */
+     - returns: Return a valid path or nil.
+     */
     func openFile() -> String? {
         let fileDialog = NSOpenPanel()
         fileDialog.canChooseFiles = false
         fileDialog.canChooseDirectories = true
         fileDialog.canCreateDirectories = true
-        if fileDialog.runModal() == NSModalResponseOK {
+        if fileDialog.runModal() == NSApplication.ModalResponse.OK {
             return fileDialog.url?.path
         }
         return nil
